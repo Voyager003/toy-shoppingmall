@@ -5,10 +5,27 @@ import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [vue({
+    template: {
+      compilerOptions: {
+        isCustomElement: (tag) => ['md-linedivider'].includes(tag),
+      }
+    }
+  })],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
-  }
+  },
+  // build: {
+  //   outDir: '../src/main/resources/static',
+  // },
+  // server: {
+  //   proxy: {
+  //     "/": {
+  //       target: "http://localhost:8080",
+  //       changeOrigin: true,
+  //     }
+  //   }
+  // }
 })
