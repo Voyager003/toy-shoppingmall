@@ -19,7 +19,7 @@
         <div class="hidden lg:flex lg:flex-1 lg:gap-x-12 lg:justify-end">
           <a href="https://github.com/Voyager003/toy-shoppingmall" class="text-sm font-semibold leading-6 text-gray-900" target="_blank">Github</a>
           <router-link to="/products" class="text-sm font-semibold leading-6 text-gray-900">Products</router-link>
-          <a href="/login" class="text-sm font-semibold leading-6 text-gray-900">Log in <span aria-hidden="true">&rarr;</span></a>
+          <router-link to="/login" class="text-sm font-semibold leading-6 text-gray-900">Log in<span aria-hidden="true">&rarr;</span></router-link>
         </div>
       </nav>
     </header>
