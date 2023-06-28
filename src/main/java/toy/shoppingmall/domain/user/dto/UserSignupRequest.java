@@ -10,6 +10,9 @@ import toy.shoppingmall.domain.user.domain.User;
 @Builder
 public class UserSignupRequest {
 
+    @NotEmpty(message = "닉네임은 필수 입력 값입니다.")
+    private String username;
+
     @NotEmpty(message = "이메일은 필수 입력 값입니다.")
     private String email;
 
@@ -20,6 +23,7 @@ public class UserSignupRequest {
 
     public User toEntity() {
         return User.builder()
+                .username(username)
                 .email(email)
                 .password(password)
                 .role(role)

@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 import toy.shoppingmall.domain.model.Address;
 import toy.shoppingmall.domain.model.Role;
 import toy.shoppingmall.domain.order.domain.Order;
-import toy.shoppingmall.domain.user.dto.UserSignupRequest;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +20,10 @@ public class User {
     @Id @GeneratedValue
     @Column(name = "user_id")
     private Long id;
+
+    @Column(name = "user_name", nullable = false)
+    private String username;
+
     @Column(name = "user_email", nullable = false)
     private String email;
 
@@ -37,7 +39,8 @@ public class User {
     private List<Order> orders = new ArrayList<>();
 
     @Builder
-    public User(String email, String password, Role role) {
+    public User(String username, String email, String password, Role role) {
+        this.username = username;
         this.email = email;
         this.Password = password;
         this.role = role;

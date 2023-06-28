@@ -30,12 +30,14 @@ public class UserSignupTest {
     public void UserSignupTest1() throws Exception {
 
         // Given
+        String username = "rome";
         String email = "example@example.com";
         String password = "password123";
-        Role role = Role.SELLER;
+        Role role = Role.ROLE_SELLER;
 
         // When
         UserSignupRequest request = UserSignupRequest.builder()
+                .username(username)
                 .email(email)
                 .password(password)
                 .role(role)
@@ -46,8 +48,11 @@ public class UserSignupTest {
 
         // Then
         assertNotNull(user);
+        assertEquals(username, user.getUsername());
         assertEquals(email, user.getEmail());
         assertEquals(password, user.getPassword());
         assertEquals(role, user.getRole());
     }
+
+
 }
