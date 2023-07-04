@@ -1,4 +1,4 @@
-package toy.shoppingmall.domain.user.Application;
+package toy.shoppingmall.domain.user.application;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -6,11 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import toy.shoppingmall.domain.user.dao.UserRepository;
 import toy.shoppingmall.domain.user.domain.User;
-import toy.shoppingmall.domain.user.dto.UserSignupRequest;
+import toy.shoppingmall.domain.user.dto.SignupRequest;
 
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserSignupService {
 
@@ -18,11 +17,11 @@ public class UserSignupService {
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
-    public Long Signup(UserSignupRequest request) throws Exception {
-        return userRepository.save(User.builder()
+    public void Signup(SignupRequest request) throws Exception {
+        userRepository.save(User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
-                .build()).getId();
+                .build());
     }
 }
