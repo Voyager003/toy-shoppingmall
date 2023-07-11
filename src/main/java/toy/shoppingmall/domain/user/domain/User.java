@@ -37,7 +37,7 @@ public class User {
     private List<Order> orders = new ArrayList<>();
 
     @Builder
-    public User(String nickname, String email, String password, Role role) {
+    public User(String email, String password, Role role) {
         this.email = email;
         this.Password = password;
         this.role = role;

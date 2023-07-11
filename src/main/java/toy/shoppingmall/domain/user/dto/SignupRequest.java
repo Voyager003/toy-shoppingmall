@@ -1,7 +1,6 @@
 package toy.shoppingmall.domain.user.dto;
 
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +17,6 @@ public class SignupRequest {
     @NotEmpty(message = "비밀번호는 필수 입력 값입니다.")
     private String password;
 
-    @NotNull(message = "역할은 필수 입력 값입니다.")
     private Role role;
 
     @Builder

@@ -20,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @WebMvcTest(controllers = UserSignupApi.class)
+@WithMockUser
 class UserSignupApiTest {
 
     @Autowired
@@ -33,7 +34,6 @@ class UserSignupApiTest {
 
     @Test
     @DisplayName("회원가입 시, 정보를 모두 받는다면 status 200을 반환한다.")
-    @WithMockUser
     public void UserSignupApiTest1() throws Exception {
 
         SignupRequest request = SignupRequest.builder()
@@ -52,7 +52,6 @@ class UserSignupApiTest {
 
     @Test
     @DisplayName("입력 값이 누락된다면 400 BAD_REQUEST를 반환한다.")
-    @WithMockUser
     public void UserSignupApiTest2() throws Exception {
 
         SignupRequest request = SignupRequest.builder()
