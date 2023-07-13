@@ -4,11 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import toy.shoppingmall.domain.model.Role;
 import toy.shoppingmall.domain.user.domain.User;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class UserDetailsImpl implements UserDetails {
 

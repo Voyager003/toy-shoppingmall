@@ -9,8 +9,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import toy.shoppingmall.global.security.UserDetailsImpl;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.util.Base64;
 import java.util.Date;
 
 
@@ -23,9 +23,9 @@ public class JwtUtils {
 
     private Key key;
     @PostConstruct
-    public void init() {
-        byte[] bytes = Base64.getDecoder().decode(jwtProperties.getSecretKey());
-        key = Keys.hmacShaKeyFor(bytes);
+    protected void init() {
+        byte[] keyBytes = jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8);
+        this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String issueJwtToken(Authentication authentication) {
