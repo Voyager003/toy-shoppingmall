@@ -1,7 +1,7 @@
 package toy.shoppingmall.global.error;
 
 
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
 
 public class ErrorResponse {
     public static JSONObject JsonErrorResponse(int errorCode, String errorMessage) {

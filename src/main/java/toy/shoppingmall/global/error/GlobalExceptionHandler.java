@@ -1,6 +1,6 @@
 package toy.shoppingmall.global.error;
 
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;

@@ -23,14 +23,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser
 class UserSignupApiTest {
 
-    @Autowired
-    MockMvc mockMvc;
+    @Autowired MockMvc mockMvc;
 
-    @Autowired
-    ObjectMapper objectMapper;
+    @Autowired ObjectMapper objectMapper;
 
-    @MockBean
-    UserSignupService userSignupService;
+    @MockBean UserSignupService userSignupService;
 
     @Test
     @DisplayName("회원가입 시, 정보를 모두 받는다면 status 200을 반환한다.")
