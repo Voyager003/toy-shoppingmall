@@ -33,13 +33,15 @@ public class User {
 
     @Embedded
     private Address address;
+
     @OneToMany(mappedBy = "user")
     private List<Order> orders = new ArrayList<>();
 
     @Builder
-    public User(String email, String password, Role role) {
+    public User(String email, String password, Role role, Address address) {
         this.email = email;
         this.Password = password;
         this.role = role;
+        this.address = address;
     }
 }

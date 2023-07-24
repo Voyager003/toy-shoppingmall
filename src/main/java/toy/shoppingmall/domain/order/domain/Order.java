@@ -1,13 +1,14 @@
 package toy.shoppingmall.domain.order.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import toy.shoppingmall.domain.model.Delivery;
+import toy.shoppingmall.domain.model.DeliveryStatus;
 import toy.shoppingmall.domain.user.domain.User;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -15,11 +16,12 @@ import java.util.List;
  */
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "orders")
 public class Order {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     @Column(name = "order_id")
     private Long id;
 
@@ -39,4 +41,42 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
+    @Builder
+    private Order(User user, Delivery delivery, List<OrderItem> orderItems, LocalDateTime orderDate, OrderStatus orderStatus) {
+        this.user = user;
+        this.delivery = delivery;
+        this.orderItems = orderItems;
+        this.orderDate = orderDate;
+        this.status = orderStatus;
+
+        Delivery.builder().order(this).build();
+        OrderItem.builder().order(this).build();
+    }
+
+    public static Order createOrder(User user, Delivery delivery, OrderItem... orderItems) {
+        return builder()
+                .user(user)
+                .delivery(delivery)
+                .orderItems(Arrays.asList(orderItems))
+                .orderDate(LocalDateTime.now())
+                .orderStatus(OrderStatus.ORDER)
+                .build();
+    }
+
+    public void cancelOrder() {
+        if (delivery.getStatus() == DeliveryStatus.COMP) {
+            throw new IllegalStateException("이미 배송 완료된 상품은 취소가 불가능합니다.");
+        }
+
+        this.status = OrderStatus.CANCEL;
+        for (OrderItem orderItem : orderItems) {
+            orderItem.cancel();
+        }
+    }
+
+    public int getTotalPrice() {
+        return orderItems.stream()
+                .mapToInt(OrderItem::getTotalPrice)
+                .sum();
+    }
 }

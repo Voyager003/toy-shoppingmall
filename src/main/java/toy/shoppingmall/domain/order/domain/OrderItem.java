@@ -1,6 +1,8 @@
 package toy.shoppingmall.domain.order.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import toy.shoppingmall.domain.item.domain.Item;
@@ -10,7 +12,7 @@ import toy.shoppingmall.domain.item.domain.Item;
  */
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "order_item")
 public class OrderItem {
 
@@ -28,4 +30,31 @@ public class OrderItem {
 
     private int price;
     private int count;
+
+    @Builder
+    private OrderItem(Order order, Item item, int orderPrice, int orderCount) {
+        this.order = order;
+        this.item = item;
+        this.price = orderPrice;
+        this.count = orderCount;
+    }
+
+    public static OrderItem createOrderItem(Item item, int orderPrice, int count) {
+        OrderItem orderItem = OrderItem.builder()
+                .item(item)
+                .orderPrice(item.getPrice())
+                .orderCount(count)
+                .build();
+
+        item.removeStock(count);
+        return orderItem;
+    }
+
+    public void cancel() {
+        getItem().addStock(count);
+    }
+
+    public int getTotalPrice() {
+        return getPrice() * getCount();
+    }
 }

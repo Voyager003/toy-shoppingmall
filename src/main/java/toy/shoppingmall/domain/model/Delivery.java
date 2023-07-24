@@ -1,13 +1,11 @@
 package toy.shoppingmall.domain.model;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import toy.shoppingmall.domain.order.domain.Order;
 
-/**
- * 주문 성공 시, 배송 정보를 생성
- */
 
 @Entity
 @Getter
@@ -26,4 +24,11 @@ public class Delivery {
 
     @Enumerated(EnumType.STRING)
     private DeliveryStatus status;
+
+    @Builder
+    private Delivery(Order order, Address address, DeliveryStatus deliveryStatus) {
+        this.order = order;
+        this.address = address;
+        this.status = deliveryStatus;
+    }
 }
