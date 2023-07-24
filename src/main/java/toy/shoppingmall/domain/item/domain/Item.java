@@ -3,16 +3,15 @@ package toy.shoppingmall.domain.item.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-/**
- * 이름, 가격, 재고를 가짐
- */
 
 @Entity
-@NoArgsConstructor
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "dtype")
+@SuperBuilder
 @Getter
+@NoArgsConstructor
 public abstract class Item {
 
     @Id @GeneratedValue
@@ -22,4 +21,16 @@ public abstract class Item {
     private String name;
     private int price;
     private int stockQuantity;
+
+    public void addStock(int quantity) {
+        this.stockQuantity += quantity;
+    }
+
+    public void removeStock(int quantity) {
+        int restStock = this.stockQuantity - quantity;
+        if (restStock < 0) {
+            throw new IllegalStateException("need more stock");
+        }
+        this.stockQuantity = restStock;
+    }
 }
