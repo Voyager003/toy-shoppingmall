@@ -1,7 +1,6 @@
 package toy.shoppingmall.domain.user.api;
 
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,30 +22,23 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@Slf4j
 public class UserLoginApi {
 
-    @Autowired
-    AuthenticationManager authenticationManager;
+    @Autowired AuthenticationManager authenticationManager;
 
-    @Autowired
-    UserRepository userRepository;
+    @Autowired UserRepository userRepository;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    @Autowired PasswordEncoder passwordEncoder;
 
     @Autowired JwtUtils jwtUtils;
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
+
+        validateLoginRequest(loginRequest);
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
-        log.info("authentication: {}", authentication);
-
-        if (authentication == null) {
-            throw new IllegalArgumentException("authentication is null");
-        }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtils.issueJwtToken(authentication);
@@ -62,5 +54,14 @@ public class UserLoginApi {
                         userDetails.getUsername(),
                         roles)
         );
+    }
+
+    private void validateLoginRequest(LoginRequest loginRequest) {
+        if (!userRepository.existsByEmail(loginRequest.getEmail())) {
+            throw new IllegalArgumentException("존재하지 않는 이메일입니다.");
+        }
+        if (!passwordEncoder.matches(loginRequest.getPassword(), userRepository.findByEmail(loginRequest.getEmail()).get().getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
     }
 }
