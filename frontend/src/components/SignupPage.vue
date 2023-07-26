@@ -8,15 +8,16 @@
       <form class="mt-6" @submit.prevent="signup">
         <div>
           <label for="email" class="block text-sm text-gray-800 dark:text-gray-200">이메일</label>
-          <input v-model="email" type="text" class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40" />
+          <input v-model="email" type="text" @input="validateEmail" :class="{ 'border-red-500': emailError }" class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40" />
+          <p v-if="emailError" class="mt-1 text-sm text-red-500">이메일 형식에 따라 작성해야합니다.</p>
         </div>
         <div class="mt-4">
           <div class="flex items-center justify-between">
             <label for="password" class="block text-sm text-gray-800 dark:text-gray-200">비밀번호</label>
           </div>
-          <input v-model="password" type="password" class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40" />
+          <input v-model="password" type="password" @input="validatePassword" :class="{ 'border-red-500': passwordError }" class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40" />
+          <p v-if="passwordError" class="mt-1 text-sm text-red-500">비밀번호는 영문과 숫자를 포함한 8~20자리여야 합니다.</p>
         </div>
-
         <div class="mt-4 flex">
           <div class="flex items-center mr-28">
             <input id="seller-checkbox" v-model="role" type="radio" value="ROLE_SELLER" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
@@ -63,7 +64,9 @@ export default {
     return {
       email: "",
       password: "",
-      role: ""
+      role: "",
+      emailError: false,
+      passwordError: false
     };
   },
   methods: {
@@ -79,11 +82,31 @@ export default {
         },
       })
         .then(response => {
-          router.replace("/login");
-        })
-        .catch(error => {
-          console.log(error);
+          if(response.data.errorCode===400) {
+            alert("이미 존재하는 이메일입니다.");
+          } else {
+            alert("회원가입이 완료되었습니다. 로그인 화면으로 이동합니다.");
+            router.replace("/login");
+          }
         });
+    },
+    validateEmail() {
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+      if (this.email && !emailRegex.test(this.email)) {
+        this.emailError = true;
+      } else {
+        this.emailError = false;
+      }
+    },
+    validatePassword() {
+      const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,20}$/;
+
+      if (this.password && !passwordRegex.test(this.password)) {
+        this.passwordError = true;
+      } else {
+        this.passwordError = false;
+      }
     }
   }
 };
