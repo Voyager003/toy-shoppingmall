@@ -1,17 +1,16 @@
 package toy.shoppingmall.global.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -22,12 +21,13 @@ import toy.shoppingmall.global.security.UserDetailsServiceImpl;
 
 
 @Configuration
+@RequiredArgsConstructor
+@EnableWebSecurity
 @EnableMethodSecurity
-@EnableWebSecurity(debug = true)
 public class SecurityConfig {
 
-    @Autowired UserDetailsServiceImpl userDetailsService;
-    @Autowired AuthEntryPointJwt unauthorizedHandler;
+    private final UserDetailsServiceImpl userDetailsService;
+    private final AuthEntryPointJwt unauthorizedHandler;
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -49,20 +49,18 @@ public class SecurityConfig {
 
 
     @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring()
-                .requestMatchers("/favicon.ico");
-    }
-
-    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.httpBasic(HttpBasicConfigurer::disable)
-                .authorizeHttpRequests(auth ->
-                        auth.anyRequest().permitAll())
-                .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.csrf(AbstractHttpConfigurer::disable)
+                .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
+                .authenticationProvider(authenticationProvider())
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(unauthorizedHandler))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .cors(Customizer.withDefaults())
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/", "/login", "/signup").permitAll()
+                        .requestMatchers("/assets/**","/favicon.ico", "/index.html").permitAll()
+                        .anyRequest().authenticated());
 
         return http.build();
     }
