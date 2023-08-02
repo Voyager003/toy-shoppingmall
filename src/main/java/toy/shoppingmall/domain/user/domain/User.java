@@ -6,11 +6,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import toy.shoppingmall.domain.model.Address;
-import toy.shoppingmall.domain.model.Role;
+import toy.shoppingmall.domain.model.Authority;
 import toy.shoppingmall.domain.order.domain.Order;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -19,7 +21,6 @@ import java.util.List;
 public class User {
 
     @Id @GeneratedValue
-    @Column(name = "user_id")
     private Long id;
 
     @Column(name = "user_email", nullable = false)
@@ -28,8 +29,11 @@ public class User {
     @Column(name = "user_password", nullable = false)
     private String Password;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Authority> roles = new HashSet<>();
 
     @Embedded
     private Address address;
@@ -38,10 +42,10 @@ public class User {
     private List<Order> orders = new ArrayList<>();
 
     @Builder
-    public User(String email, String password, Role role, Address address) {
+    public User(String email, String password, Set<Authority> roles,Address address) {
         this.email = email;
         this.Password = password;
-        this.role = role;
+        this.roles = roles;
         this.address = address;
     }
 }

@@ -1,7 +1,9 @@
 package toy.shoppingmall.domain.user.api;
 
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,15 +24,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@RequiredArgsConstructor
 public class UserLoginApi {
 
-    @Autowired AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired JwtUtils jwtUtils;
+    private final JwtUtils jwtUtils;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
@@ -44,16 +47,19 @@ public class UserLoginApi {
         String jwt = jwtUtils.issueJwtToken(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Authorization", "Bearer " + jwt);
+
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(
-                new JwtResponse(jwt,
-                        userDetails.getId(),
-                        userDetails.getUsername(),
-                        roles)
-        );
+        return new ResponseEntity<>(new JwtResponse(jwt,
+                userDetails.getId(),
+                userDetails.getUsername(),
+                userDetails.getEmail(),
+                roles), httpHeaders, HttpStatus.OK);
     }
 
     private void validateLoginRequest(LoginRequest loginRequest) {
