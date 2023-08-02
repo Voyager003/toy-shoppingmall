@@ -34,7 +34,6 @@ public class SignupRequest {
         return User.builder()
                 .email(email)
                 .password(password)
-                .role(role)
                 .build();
     }
 }

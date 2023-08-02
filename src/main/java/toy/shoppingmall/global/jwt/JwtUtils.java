@@ -4,18 +4,14 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-import toy.shoppingmall.global.security.UserDetailsImpl;
-
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.util.Date;
+import java.util.*;
 
 
 @Component
-@Slf4j
 @RequiredArgsConstructor
 public class JwtUtils {
 
@@ -29,17 +25,19 @@ public class JwtUtils {
     }
 
     public String issueJwtToken(Authentication authentication) {
-
-        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
-
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+                .setSubject(authentication.getName())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtProperties.getExpiration()))
-                .setSubject(userPrincipal.getUsername())
-                .claim("id", userPrincipal.getId())
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    private Claims getClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key).build()
+                .parseClaimsJws(token).getBody();
     }
 
 
