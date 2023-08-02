@@ -9,7 +9,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import toy.shoppingmall.domain.model.Authority;
 import toy.shoppingmall.domain.model.Role;
+import toy.shoppingmall.domain.user.dao.AuthorityRepository;
 import toy.shoppingmall.domain.user.dao.UserRepository;
 import toy.shoppingmall.domain.user.domain.User;
 import toy.shoppingmall.global.security.UserDetailsImpl;
@@ -18,6 +20,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,9 +31,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class jwtTokenTest {
 
     @Autowired UserRepository userRepository;
-
+    @Autowired AuthorityRepository authorityRepository;
     @Autowired JwtUtils jwtUtils;
-
     @Autowired JwtProperties jwtProperties;
 
     @Test
@@ -38,11 +42,14 @@ public class jwtTokenTest {
         Key key = Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8));
 
         Role role = Role.ROLE_SELLER;
+        Set<Authority> authorities = new HashSet<>();
+        Authority authority = Authority.builder().name(Role.ROLE_SELLER).build();
+        authorityRepository.save(authority);
 
         User user = userRepository.save(User.builder()
                 .email("ex@gmail.com")
                 .password("1234")
-                .role(role)
+                .roles(authorities)
                 .build());
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(
@@ -50,7 +57,9 @@ public class jwtTokenTest {
                         user.getId(),
                         user.getEmail(),
                         user.getPassword(),
-                        Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name()))
+                        user.getRoles().stream()
+                                .map(auth -> new SimpleGrantedAuthority(auth.getName().name()))
+                                .collect(Collectors.toList())
                 ),
                 null
         );

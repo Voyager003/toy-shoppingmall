@@ -30,13 +30,13 @@ class UserSignupApiTest {
     @MockBean UserSignupService userSignupService;
 
     @Test
-    @DisplayName("회원가입 시, 정보를 모두 받는다면 status 200을 반환한다.")
+    @DisplayName("회원가입 시, 유효성 검증을 통과한다면 status 200을 반환한다.")
     public void UserSignupApiTest1() throws Exception {
 
         SignupRequest request = SignupRequest.builder()
                 .email("ex@gmail.com")
-                .password("123").
-                role(Role.ROLE_CUSTOMER).build();
+                .password("1q2w3e4r")
+                .role(Role.ROLE_CUSTOMER).build();
 
         mockMvc.perform(post("/signup")
                         .with(csrf())
@@ -48,7 +48,7 @@ class UserSignupApiTest {
     }
 
     @Test
-    @DisplayName("입력 값이 누락된다면 400 BAD_REQUEST를 반환한다.")
+    @DisplayName("입력 값이 누락되어 유효성 검증을 통과하지 못하면, status 400을 반환한다.")
     public void UserSignupApiTest2() throws Exception {
 
         SignupRequest request = SignupRequest.builder()

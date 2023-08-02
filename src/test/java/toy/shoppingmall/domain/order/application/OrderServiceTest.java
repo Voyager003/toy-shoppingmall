@@ -7,12 +7,16 @@ import org.springframework.transaction.annotation.Transactional;
 import toy.shoppingmall.domain.item.dao.ItemRepository;
 import toy.shoppingmall.domain.item.domain.Book;
 import toy.shoppingmall.domain.model.Address;
+import toy.shoppingmall.domain.model.Authority;
 import toy.shoppingmall.domain.model.Role;
 import toy.shoppingmall.domain.order.dao.OrderRepository;
 import toy.shoppingmall.domain.order.domain.Order;
 import toy.shoppingmall.domain.order.domain.OrderStatus;
 import toy.shoppingmall.domain.user.dao.UserRepository;
 import toy.shoppingmall.domain.user.domain.User;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -96,11 +100,14 @@ class OrderServiceTest {
 
     private User registerUser() {
         Address address = new Address("한국", "서울");
+
+        Set<Authority> authorities = new HashSet<>();
+        Authority authority = Authority.builder().name(Role.ROLE_SELLER).build();
         User user = User.builder()
                 .email("ex@gmail.com")
                 .password("123")
                 .address(address)
-                .role(Role.ROLE_SELLER)
+                .roles(authorities)
                 .build();
         userRepository.save(user);
         return user;
@@ -116,6 +123,4 @@ class OrderServiceTest {
         itemRepository.save(book);
         return book;
     }
-
-
 }
