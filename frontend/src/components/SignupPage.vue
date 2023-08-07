@@ -5,7 +5,7 @@
         <img class="w-auto h-7 sm:h-8" src="https://merakiui.com/images/logo.svg" alt="">
       </div>
 
-      <form class="mt-6" @submit.prevent="signup">
+      <form class="mt-6" @submit.prevent="signupUser">
         <div>
           <label for="email" class="block text-sm text-gray-800 dark:text-gray-200">이메일</label>
           <input v-model="email" type="text" @input="validateEmail" :class="{ 'border-red-500': emailError }" class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40" />
@@ -55,8 +55,7 @@
 </template>
 
 <script>
-import axios from "axios";
-import router from "@/router";
+import { signup, validateEmail, validatePassword } from "@/services/user-register.ts";
 
 export default {
   name: "SignupPage",
@@ -64,49 +63,27 @@ export default {
     return {
       email: "",
       password: "",
-      role: "",
+      role: "ROLE_SELLER",
       emailError: false,
       passwordError: false
     };
   },
   methods: {
-    signup() {
-      const user = {
-        email: this.email,
-        password: this.password,
-        role: this.role
-      };
-      axios.post("/signup", JSON.stringify(user), {
-        headers: {
-          "Content-Type": "application/json"
-        },
-      })
-        .then(response => {
-          if(response.data.errorCode===400) {
-            alert("이미 존재하는 이메일입니다.");
+    signupUser() {
+      signup(this.email, this.password, this.role)
+        .then(message => {
+          if (message.includes("이미 존재하는 이메일입니다.")) {
+            alert(message);
           } else {
-            alert("회원가입이 완료되었습니다. 로그인 화면으로 이동합니다.");
-            router.replace("/login");
+            alert(message);
           }
         });
     },
     validateEmail() {
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
-      if (this.email && !emailRegex.test(this.email)) {
-        this.emailError = true;
-      } else {
-        this.emailError = false;
-      }
+      this.emailError = validateEmail(this.email);
     },
     validatePassword() {
-      const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,20}$/;
-
-      if (this.password && !passwordRegex.test(this.password)) {
-        this.passwordError = true;
-      } else {
-        this.passwordError = false;
-      }
+      this.passwordError = validatePassword(this.password);
     }
   }
 };

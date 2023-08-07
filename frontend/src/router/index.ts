@@ -28,6 +28,6 @@ const router = createRouter({
       component: LoginPage
     }
   ]
-})
+});
 
 export default router

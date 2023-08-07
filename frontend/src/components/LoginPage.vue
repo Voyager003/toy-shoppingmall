@@ -32,20 +32,19 @@
 <script>
 import axios from "axios";
 import router from "@/router";
-
+import { ref } from 'vue';
+import { useAuthStore } from "/src/stores/user-store.ts";
 export default {
   name: "LoginPage",
-  data() {
-    return {
-      email: "",
-      password: ""
-    }
-  },
-  methods: {
-    login() {
+  setup() {
+    const email = ref("");
+    const password = ref("");
+    const authStore = useAuthStore();  // 변경된 인스턴스 생성
+
+    const login = () => {
       const user = {
-        email: this.email,
-        password: this.password,
+        email: email.value,
+        password: password.value,
       };
       axios.post("/login", JSON.stringify(user), {
         headers: {
@@ -53,18 +52,23 @@ export default {
         },
       })
         .then(response => {
-          if(response.data.errorCode===409) {
+          if (response.data.errorCode === 409) {
             alert("이메일 혹은 패스워드가 잘못 입력되었습니다.");
           } else {
-            alert("로그인 되었습니다!");
+            authStore.login(response.data);
             router.replace("/");
           }
         });
-    }
-  }
+    };
+
+    return {
+      email,
+      password,
+      login,
+    };
+  },
 };
 </script>
 
 <style scoped>
-
 </style>

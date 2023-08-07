@@ -19,7 +19,8 @@
         <div class="hidden lg:flex lg:flex-1 lg:gap-x-12 lg:justify-end">
           <a href="https://github.com/Voyager003/toy-shoppingmall" class="text-sm font-semibold leading-6 text-gray-900" target="_blank">Github</a>
           <router-link to="/products" class="text-sm font-semibold leading-6 text-gray-900">Products</router-link>
-          <router-link to="/login" class="text-sm font-semibold leading-6 text-gray-900">Log in<span aria-hidden="true">&rarr;</span></router-link>
+          <router-link v-if="!isLoggedIn" to="/login" class="text-sm font-semibold leading-6 text-gray-900">Login<span aria-hidden="true">&rarr;</span></router-link>
+          <button v-else @click="logout" class="text-sm font-semibold leading-6 text-gray-900 cursor-pointer">Logout</button>
         </div>
       </nav>
     </header>
@@ -27,12 +28,31 @@
 </template>
 
 <script>
+import { computed } from "vue";
+import router from "@/router";
+import { useAuthStore } from "@/stores/user-store";
+
 export default {
   name: "MainHeader",
+  setup() {
+    const authStore = useAuthStore();
+
+    const logout = () => {
+      authStore.logout();
+      localStorage.removeItem("accessToken");
+      router.replace("/");
+    };
+
+    const isLoggedIn = computed(() => authStore.isLoggedIn);
+
+    return {
+      logout,
+      isLoggedIn,
+    };
+  },
 };
 
 </script>
 
 <style scoped>
-
 </style>
