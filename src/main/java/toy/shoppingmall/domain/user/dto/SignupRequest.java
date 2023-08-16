@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import toy.shoppingmall.domain.model.Role;
+import toy.shoppingmall.domain.user.domain.Role;
 import toy.shoppingmall.domain.user.domain.User;
 
 @Getter

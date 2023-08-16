@@ -34,12 +34,6 @@ public class JwtUtils {
                 .compact();
     }
 
-    private Claims getClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key).build()
-                .parseClaimsJws(token).getBody();
-    }
-
 
     public String getUserNameFromJwtToken(String token) {
         return Jwts.parserBuilder()

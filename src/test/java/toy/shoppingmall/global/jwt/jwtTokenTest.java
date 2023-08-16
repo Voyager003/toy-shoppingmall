@@ -9,8 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import toy.shoppingmall.domain.model.Authority;
-import toy.shoppingmall.domain.model.Role;
+import toy.shoppingmall.domain.user.domain.Authority;
+import toy.shoppingmall.domain.user.domain.Role;
 import toy.shoppingmall.domain.user.dao.AuthorityRepository;
 import toy.shoppingmall.domain.user.dao.UserRepository;
 import toy.shoppingmall.domain.user.domain.User;
@@ -18,7 +18,6 @@ import toy.shoppingmall.global.security.UserDetailsImpl;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;

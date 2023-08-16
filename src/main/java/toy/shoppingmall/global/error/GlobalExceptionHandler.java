@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import toy.shoppingmall.domain.user.exception.DuplicateEmailException;
 import toy.shoppingmall.domain.user.exception.EmailNotFoundException;
-import toy.shoppingmall.domain.user.exception.InvalidPasswordException;
+import toy.shoppingmall.domain.user.exception.invalidPasswordException;
 
 @ControllerAdvice
 @ResponseBody
@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
         return ErrorResponse.JsonErrorResponse(409, "존재하지 않는 이메일 입니다.");
     }
 
-    @ExceptionHandler(InvalidPasswordException.class)
+    @ExceptionHandler(invalidPasswordException.class)
     public JSONObject invalidPasswordException() {
         return ErrorResponse.JsonErrorResponse(409, "비밀번호가 일치하지 않습니다.");
     }

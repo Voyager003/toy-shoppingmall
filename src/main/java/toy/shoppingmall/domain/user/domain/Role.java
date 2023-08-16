@@ -1,4 +1,4 @@
-package toy.shoppingmall.domain.model;
+package toy.shoppingmall.domain.user.domain;
 
 import lombok.Getter;
 
