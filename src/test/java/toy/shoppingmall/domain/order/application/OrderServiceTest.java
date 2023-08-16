@@ -7,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 import toy.shoppingmall.domain.item.dao.ItemRepository;
 import toy.shoppingmall.domain.item.domain.Book;
 import toy.shoppingmall.domain.model.Address;
-import toy.shoppingmall.domain.model.Authority;
-import toy.shoppingmall.domain.model.Role;
+import toy.shoppingmall.domain.user.domain.Authority;
+import toy.shoppingmall.domain.user.domain.Role;
 import toy.shoppingmall.domain.order.dao.OrderRepository;
 import toy.shoppingmall.domain.order.domain.Order;
 import toy.shoppingmall.domain.order.domain.OrderStatus;
@@ -29,13 +29,6 @@ class OrderServiceTest {
     @Autowired OrderRepository orderRepository;
     @Autowired UserRepository userRepository;
     @Autowired ItemRepository itemRepository;
-
-    @AfterEach
-    public void cleanup() {
-        orderRepository.deleteAll();
-        userRepository.deleteAll();
-        itemRepository.deleteAll();
-    }
 
     @Test
     @DisplayName("상품을 주문하고 상태 및 재고, 가격을 확인한다.")
