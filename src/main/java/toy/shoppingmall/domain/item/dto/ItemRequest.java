@@ -23,6 +23,7 @@ public class ItemRequest {
     private int stockQuantity;
 
     private String category;
+    @NotBlank
     private String categoryDetail;
 
     @Builder

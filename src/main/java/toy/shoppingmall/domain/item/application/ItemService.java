@@ -20,11 +20,12 @@ public class ItemService {
     private final ItemRepository itemRepository;
 
     @Transactional
-    public void registerItem(ItemRequest request) {
+    public Long registerItem(ItemRequest request) {
         Item newItem = createItem(request);
         if (newItem != null) {
             itemRepository.save(newItem);
         }
+        return newItem.getId();
     }
 
     private Item createItem(ItemRequest request) {
@@ -41,17 +42,17 @@ public class ItemService {
                         .build();
             case "album":
                 return Album.builder()
-                        .artist(categoryDetail)
                         .name(request.getName())
                         .price(request.getPrice())
                         .stockQuantity(request.getStockQuantity())
+                        .artist(categoryDetail)
                         .build();
             case "movie":
                 return Movie.builder()
-                        .director(categoryDetail)
                         .name(request.getName())
                         .price(request.getPrice())
                         .stockQuantity(request.getStockQuantity())
+                        .director(categoryDetail)
                         .build();
             default:
                 return null;

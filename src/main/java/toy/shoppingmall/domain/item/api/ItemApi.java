@@ -20,7 +20,7 @@ public class ItemApi {
     @PostMapping("/products/register")
     @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<?> registerItem(@RequestBody @Valid ItemRequest request) {
-        itemService.registerItem(request);
-        return ResponseEntity.ok("상품이 성공적으로 등록되었습니다.");
+        Long itemId = itemService.registerItem(request);
+        return ResponseEntity.ok(itemId);
     }
 }
