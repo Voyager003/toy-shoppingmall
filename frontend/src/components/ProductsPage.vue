@@ -1,9 +1,8 @@
 <template>
   <section class="py-12 bg-white sm:py-16 lg:py-20">
-    <div class="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
+    <div class="px-2 mx-auto sm:px-6 lg:px-8 max-w-7xl">
       <div class="max-w-md mx-auto text-center mb-8">
         <h2 class="text-2xl font-bold text-gray-900 sm:text-3xl">상품 목록</h2>
-        <p class="mt-4 text-base font-normal leading-7 text-gray-600">원하는 상품을 등록하거나 구매할 수 있습니다.</p>
       </div>
 
       <form>
@@ -19,28 +18,21 @@
         </div>
       </form>
 
-      <div class="mt-8 flex justify-end">
-        <router-link to="/products/write" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:ring-2 focus:ring-blue-300">
+      <div class="mt-4 flex justify-end">
+        <button @click="goItemRegisterPage" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:ring-2 focus:ring-blue-300">
           상품 등록
-        </router-link>
+        </button>
       </div>
-
-      <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-        <div v-for="(product, index) in products" :key="index" class="group relative">
-          <div class="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
-            <img :src="product.image" :alt="product.name" class="h-full w-full object-cover object-center lg:h-full lg:w-full">
+    </div>
+    <div class="px-2 mx-auto sm:px-6 lg:px-8 max-w-7xl">
+      <h3 class="text-gray-600 text-2xl font-medium">Products</h3>
+      <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 mt-6">
+        <div class="w-full max-w-sm mx-auto rounded-md shadow-md overflow-hidden">
+          <div class="flex items-end justify-end h-56 w-full bg-cover" style="background-image: url('https://images.unsplash.com/photo-1563170351-be82bc888aa4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=376&q=80')">
           </div>
-          <div class="mt-4 flex justify-between">
-            <div>
-              <h3 class="text-sm text-gray-700">
-                <a href="#">
-                  <span aria-hidden="true" class="absolute inset-0"></span>
-                  {{ product.name }}
-                </a>
-              </h3>
-              <p class="mt-1 text-sm text-gray-500">{{ product.category }}</p>
-            </div>
-            <p class="text-sm font-medium text-gray-900">${{ product.price }}</p>
+          <div class="px-5 py-3">
+            <h3 class="text-gray-700 uppercase">췍</h3>
+            <span class="text-gray-500 mt-2">5000원</span>
           </div>
         </div>
       </div>
@@ -49,23 +41,27 @@
 </template>
 
 <script>
+
+import router from "@/router";
+
 export default {
-name: "ProductsPage",
-  data() {
-    return {
-      products: [
-        {
-          name: "Basic Tee",
-          category: "Clothing",
-          price: 35,
-          image: "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg"
-        },
-      ]
-    };
-  }
+  name: "ProductsPage",
+  methods: {
+    goItemRegisterPage() {
+      const tokenData = JSON.parse(localStorage.getItem("accessToken"));
+      const roles = tokenData ? tokenData.roles : [];
+      if (!tokenData || roles.length === 0) {
+        alert("로그인이 필요한 기능입니다.");
+        router.push("/login");
+      } else if (roles.includes("ROLE_SELLER")) {
+        router.push("/products/write");
+      } else {
+        alert("판매자만 등록이 가능합니다.");
+      }
+    }
+  },
 }
 </script>
 
 <style scoped>
-
 </style>
