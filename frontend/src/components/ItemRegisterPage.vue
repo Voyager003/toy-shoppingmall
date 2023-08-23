@@ -26,7 +26,7 @@
 
         <div>
           <label for="product-image" class="block text-sm font-medium text-gray-700">사진 업로드</label>
-          <input type="file" id="product-image" class="mt-1 block w-full p-2.5 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+          <input type="file" id="product-image" v-on:change="uploadImage" ref="imageFile" class="mt-1 block w-full p-2.5 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
         </div>
 
         <div>
@@ -80,6 +80,7 @@ export default {
       stockQuantity: null,
       category: "album",
       categoryDetail: "",
+      imageFile: null,
       showErrors: false
     };
   },
@@ -102,6 +103,9 @@ export default {
     },
   },
   methods: {
+    uploadImage() {
+      this.imageFile = this.$refs.imageFile.files[0];
+    },
     async registerItem() {
       this.showErrors = true;
       if (
@@ -112,31 +116,37 @@ export default {
       ) {
         return;
       }
+
+      const requestData = {
+        name: this.name,
+        price: this.price,
+        stockQuantity: this.stockQuantity,
+        category: this.category,
+        categoryDetail: this.categoryDetail,
+      };
       const tokenData = JSON.parse(localStorage.getItem('accessToken'));
       const token = tokenData.token;
+
+      const formData = new FormData();
+      formData.append('image', this.imageFile);
+      formData.append('request', new Blob([JSON.stringify(requestData)], { type: 'application/json' }));
+
       try {
-        const response = await axios.post(
-          '/products/register',
-          {
-            name: this.name,
-            price: this.price,
-            stockQuantity: this.stockQuantity,
-            category: this.category,
-            categoryDetail: this.categoryDetail,
-          },
-          {
+        const response = await axios.post('/products/register', formData, {
             headers: {
-              'Content-Type': 'application/json',
               Authorization: `Bearer ${token}`,
+              "Content-Type": `multipart/form-data`,
             },
           }
         );
 
         if (response.status === 200) {
-          const productId = response.data;
+          const productId = response.data.itemId;
+          const imageUrl = response.data.imageUrl;
           useProductStore().setProductDetails({
             name: this.name,
             price: this.price,
+            imageUrl: imageUrl
           });
           await router.push(`/products/${productId}`);
           alert('상품이 등록되었습니다.');
