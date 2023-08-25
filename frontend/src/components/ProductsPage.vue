@@ -28,11 +28,11 @@
       <h3 class="text-gray-600 text-2xl font-medium">Products</h3>
       <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 mt-6">
         <div class="w-full max-w-sm mx-auto rounded-md shadow-md overflow-hidden">
-          <div class="flex items-end justify-end h-56 w-full bg-cover" style="background-image: url('https://images.unsplash.com/photo-1563170351-be82bc888aa4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=376&q=80')">
+          <div class="flex items-end justify-end h-56 w-full bg-cover" :style="'background-image: url(/products/' + products.imageUrl + ')'">
           </div>
           <div class="px-5 py-3">
-            <h3 class="text-gray-700 uppercase">췍</h3>
-            <span class="text-gray-500 mt-2">5000원</span>
+            <h3 class="text-gray-700 uppercase"> {{ products.name }}</h3>
+            <span class="text-gray-500 mt-2">{{ products.price }} 원</span>
           </div>
         </div>
       </div>
@@ -40,17 +40,33 @@
   </section>
 </template>
 
-<script>
+<script lang="ts">
 
 import router from "@/router";
+import { useProductStore } from "@/stores/item-store";
 
 export default {
   name: "ProductsPage",
+  computed: {
+    products(): { name: string; price: number; imageUrl: string } {
+      const productStore = useProductStore();
+      return productStore.productDetails;
+    },
+  },
   methods: {
     goItemRegisterPage() {
-      const tokenData = JSON.parse(localStorage.getItem("accessToken"));
+      const accessToken = localStorage.getItem("accessToken");
+
+      if (accessToken === null) {
+        alert("로그인이 필요한 기능입니다.");
+        router.push("/login");
+        return;
+      }
+
+      const tokenData: { roles: string[] } = JSON.parse(accessToken);
       const roles = tokenData ? tokenData.roles : [];
-      if (!tokenData || roles.length === 0) {
+
+      if (roles.length === 0) {
         alert("로그인이 필요한 기능입니다.");
         router.push("/login");
       } else if (roles.includes("ROLE_SELLER")) {

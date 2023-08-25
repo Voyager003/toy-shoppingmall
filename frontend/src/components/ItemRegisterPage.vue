@@ -148,7 +148,7 @@ export default {
             price: this.price,
             imageUrl: imageUrl
           });
-          await router.push(`/products/${productId}`);
+          await router.replace(`/products/${productId}`);
           alert('상품이 등록되었습니다.');
         }
       } catch (error) {
