@@ -24,31 +24,46 @@
         </button>
       </div>
     </div>
-    <div class="px-2 mx-auto sm:px-6 lg:px-8 max-w-7xl">
-      <h3 class="text-gray-600 text-2xl font-medium">Products</h3>
-      <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 mt-6">
-        <div class="w-full max-w-sm mx-auto rounded-md shadow-md overflow-hidden">
-          <div class="flex items-end justify-end h-56 w-full bg-cover" :style="'background-image: url(/products/' + products.imageUrl + ')'">
-          </div>
-          <div class="px-5 py-3">
-            <h3 class="text-gray-700 uppercase"> {{ products.name }}</h3>
-            <span class="text-gray-500 mt-2">{{ products.price }} 원</span>
+
+    <div class="home mt-6">
+      <div class="album py-5 bg-light">
+        <div class="container-xl">
+          <div class="flex overflow-x-auto">
+            <div v-for="(item, idx) in state.items" :key="idx" class="flex-none w-1/3 px-3">
+              <ProductsList :item="item" />
+            </div>
           </div>
         </div>
       </div>
     </div>
+    <ItemPagination />
   </section>
 </template>
 
 <script lang="ts">
-
 import router from "@/router";
 import { useProductStore } from "@/stores/item-store";
+import { onMounted, reactive } from "vue";
+import axios from "axios";
+import ProductsList from "@/components/ProductsList.vue";
+import ItemPagination from "@/components/ItemPagination.vue";
 
 export default {
   name: "ProductsPage",
+  components: { ItemPagination, ProductsList },
+  setup() {
+    const state = reactive({
+      items: [],
+    });
+    onMounted(() => {
+      axios.get("/products").then(({ data }) => {
+        state.items = data;
+      });
+    });
+    return { state };
+  },
   computed: {
-    products(): { name: string; price: number; imageUrl: string } {
+    products(): { name: string; price: number; } {
       const productStore = useProductStore();
       return productStore.productDetails;
     },
