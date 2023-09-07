@@ -19,8 +19,12 @@ public abstract class Item {
     private Long id;
 
     private String name;
+
     private int price;
+
     private int stockQuantity;
+
+    private String imagePath;
 
     public void addStock(int quantity) {
         this.stockQuantity += quantity;

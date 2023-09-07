@@ -2,13 +2,19 @@ package toy.shoppingmall.domain.item.api;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import toy.shoppingmall.domain.item.application.ItemService;
+import toy.shoppingmall.domain.item.domain.Item;
 import toy.shoppingmall.domain.item.dto.ItemRequest;
+
+import java.io.IOException;
 
 
 @RestController
@@ -17,10 +23,21 @@ public class ItemApi {
 
     private final ItemService itemService;
 
+    @GetMapping("/products/{itemId}")
+    public ResponseEntity getItem(@PathVariable Long itemId) throws Throwable {
+        return ResponseEntity.ok(itemService.findItem(itemId));
+    }
+
+    @GetMapping("/products")
+    public Page<Item> getItems(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        return itemService.findItems(pageable);
+    }
+
     @PostMapping("/products/register")
     @PreAuthorize("hasRole('SELLER')")
-    public ResponseEntity<?> registerItem(@RequestBody @Valid ItemRequest request) {
-        Long itemId = itemService.registerItem(request);
+    public ResponseEntity<?> registerItem(@RequestPart(name = "request") @Valid ItemRequest request,
+                                          @RequestPart(name = "image", required = false) MultipartFile imgFile) throws IOException {
+        Long itemId = itemService.registerItem(request, imgFile);
         return ResponseEntity.ok(itemId);
     }
 }

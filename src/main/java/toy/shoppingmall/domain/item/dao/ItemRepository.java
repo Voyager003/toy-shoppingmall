@@ -6,4 +6,8 @@ import toy.shoppingmall.domain.item.domain.Item;
 
 @Repository
 public interface ItemRepository<T extends Item> extends JpaRepository<T, Long> {
+
+    default T getById(Long id) {
+        return findById(id).orElseThrow(IllegalArgumentException::new);
+    }
 }
