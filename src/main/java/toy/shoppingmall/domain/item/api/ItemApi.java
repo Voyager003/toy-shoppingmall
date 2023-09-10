@@ -2,7 +2,6 @@ package toy.shoppingmall.domain.item.api;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -11,7 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import toy.shoppingmall.domain.item.application.ItemService;
-import toy.shoppingmall.domain.item.domain.Item;
+import toy.shoppingmall.domain.item.dto.ItemPageDto;
 import toy.shoppingmall.domain.item.dto.ItemRequest;
 
 import java.io.IOException;
@@ -29,8 +28,8 @@ public class ItemApi {
     }
 
     @GetMapping("/products")
-    public Page<Item> getItems(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        return itemService.findItems(pageable);
+    public ItemPageDto getItems(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ItemPageDto.of(itemService.findItems(pageable));
     }
 
     @PostMapping("/products/register")
