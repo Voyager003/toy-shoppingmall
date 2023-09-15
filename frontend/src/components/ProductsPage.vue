@@ -25,60 +25,55 @@
       </div>
     </div>
 
-    <div class="home mt-6">
-      <div class="album py-5 bg-light">
-        <div class="container-xl">
-          <div class="flex overflow-x-auto">
-            <div v-for="(item, idx) in state.items" :key="idx" class="flex-none w-1/3 px-3">
-              <ProductsList :item="item" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <ItemPagination />
+    <ItemCard
+      :itemList="itemList"
+      :currentPage="page.page"
+      :totalPages="totalPages"
+      :pageChange="onPageChange"
+    />
   </section>
 </template>
 
-<script lang="ts">
+<script>
 import router from "@/router";
-import { useProductStore } from "@/stores/item-store";
-import { onMounted, reactive } from "vue";
-import axios from "axios";
-import ProductsList from "@/components/ProductsList.vue";
-import ItemPagination from "@/components/ItemPagination.vue";
+import ItemCard from "@/components/Item/ItemCard.vue";
+import { fetchList } from "@/services/item/ItemPosts";
 
 export default {
   name: "ProductsPage",
-  components: { ItemPagination, ProductsList },
-  setup() {
-    const state = reactive({
-      items: [],
-    });
-    onMounted(() => {
-      axios.get("/products").then(({ data }) => {
-        state.items = data;
-      });
-    });
-    return { state };
+  components: { ItemCard },
+  data() {
+    return {
+      itemList: [],
+      totalPages: 0,
+      page: {
+        page: 0,
+        size: 3,
+        sort: "id,desc"
+      },
+    };
   },
-  computed: {
-    products(): { name: string; price: number; } {
-      const productStore = useProductStore();
-      return productStore.productDetails;
-    },
+  created() {
+    fetchList(this.page).then((response) => {
+      this.itemList = response.data.elements;
+      this.totalPages = response.data.totalPages;
+      this.page.page = response.data.currentPage;
+    });
   },
   methods: {
+    onPageChange(value) {
+      this.page.page = value.requestPage;
+      this.created();
+    },
     goItemRegisterPage() {
       const accessToken = localStorage.getItem("accessToken");
-
       if (accessToken === null) {
         alert("로그인이 필요한 기능입니다.");
         router.push("/login");
         return;
       }
 
-      const tokenData: { roles: string[] } = JSON.parse(accessToken);
+      const tokenData = JSON.parse(accessToken);
       const roles = tokenData ? tokenData.roles : [];
 
       if (roles.length === 0) {

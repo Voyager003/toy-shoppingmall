@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
-import ProductsView from "@/views/ProductsView.vue";
 import SignupPage from "@/components/SignupPage.vue";
 import LoginPage from "@/components/LoginPage.vue";
-import ItemRegisterPage from "@/components/ItemRegisterPage.vue";
+import ItemRegisterPage from "@/components/Item/ItemRegisterPage.vue";
 import { useAuthStore } from "@/stores/user-store";
-import ItemPage from "@/components/ItemPage.vue";
+import ItemPage from "@/components/Item/ItemDetail.vue";
+import ProductsPage from "@/components/ProductsPage.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,7 +16,7 @@ const router = createRouter({
     },
     {
       path: "/products",
-      component: ProductsView
+      component: ProductsPage
     },
     {
       path: "/signup",
