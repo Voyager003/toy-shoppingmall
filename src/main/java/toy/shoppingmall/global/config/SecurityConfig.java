@@ -17,7 +17,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import toy.shoppingmall.global.jwt.AuthEntryPointJwt;
 import toy.shoppingmall.global.jwt.AuthTokenFilter;
-import toy.shoppingmall.global.jwt.JwtAccessDeniedHandler;
 import toy.shoppingmall.global.security.UserDetailsServiceImpl;
 
 
@@ -29,7 +28,6 @@ public class SecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthEntryPointJwt unauthorizedHandler;
-    private final JwtAccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -58,9 +56,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers( "/","/login", "/signup").permitAll()
                         .requestMatchers("/assets/**","/favicon.ico", "/index.html").permitAll()
-                        .requestMatchers("/api/test/**").permitAll()
+                        .requestMatchers( "/","/login", "/signup", "/products/**").permitAll()
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

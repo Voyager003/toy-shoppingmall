@@ -4,10 +4,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.transaction.annotation.Transactional;
 import toy.shoppingmall.domain.item.dao.ItemRepository;
 import toy.shoppingmall.domain.item.domain.Book;
 import toy.shoppingmall.domain.item.dto.ItemRequest;
+
+import java.io.IOException;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -22,7 +25,7 @@ class ItemServiceTest {
 
     @Test
     @DisplayName("상품 등록 테스트")
-    void itemRegisterTest() {
+    void itemRegisterTest() throws IOException {
         /**
          * given : Item(책)의 상품 명, 가격, 재고가 주어진다.
          * when : 상품 등록을 요청한다.
@@ -37,7 +40,14 @@ class ItemServiceTest {
                 .categoryDetail("Author Name")
                 .build();
 
-        itemService.registerItem(bookRequest);
+        MockMultipartFile multipartFile = new MockMultipartFile(
+                "file",
+                "test.txt",
+                "text/plain",
+                "Test content".getBytes()
+        );
+
+        itemService.registerItem(bookRequest, multipartFile);
 
         Book savedBook = (Book) itemRepository.findAll().get(0);
         assertThat(savedBook.getName()).isEqualTo("Book Item");

@@ -40,7 +40,6 @@ public class jwtTokenTest {
 
         Key key = Keys.hmacShaKeyFor(jwtProperties.getSecretKey().getBytes(StandardCharsets.UTF_8));
 
-        Role role = Role.ROLE_SELLER;
         Set<Authority> authorities = new HashSet<>();
         Authority authority = Authority.builder().name(Role.ROLE_SELLER).build();
         authorityRepository.save(authority);

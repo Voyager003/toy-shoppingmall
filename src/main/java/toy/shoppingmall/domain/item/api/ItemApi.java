@@ -28,7 +28,7 @@ public class ItemApi {
     }
 
     @GetMapping("/products")
-    public ItemPageDto getItems(@PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+    public ItemPageDto getItems(@PageableDefault(size = 3, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         return ItemPageDto.of(itemService.findItems(pageable));
     }
 

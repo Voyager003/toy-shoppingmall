@@ -6,6 +6,8 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import toy.shoppingmall.global.security.UserDetailsImpl;
+
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.*;
@@ -25,11 +27,16 @@ public class JwtUtils {
     }
 
     public String issueJwtToken(Authentication authentication) {
+
+        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setSubject(authentication.getName())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtProperties.getExpiration()))
+                .setSubject(userPrincipal.getUsername())
+                .claim("id", userPrincipal.getId())
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
