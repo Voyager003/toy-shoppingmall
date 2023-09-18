@@ -39,7 +39,7 @@ export default {
   setup() {
     const email = ref("");
     const password = ref("");
-    const authStore = useAuthStore();  // 변경된 인스턴스 생성
+    const authStore = useAuthStore();
 
     const login = () => {
       const user = {
@@ -52,11 +52,15 @@ export default {
         },
       })
         .then(response => {
-          if (response.data.errorCode === 409) {
-            alert("이메일 혹은 패스워드가 잘못 입력되었습니다.");
-          } else {
+          if (response.status === 200) {
             authStore.login(response.data);
-            router.replace("/");
+            alert("로그인 되었습니다!");
+            router.replace("/products");
+          }
+        })
+        .catch(error => {
+          if (error.response.status === 409) {
+            alert("이메일 혹은 패스워드가 잘못 입력되었습니다.");
           }
         });
     };

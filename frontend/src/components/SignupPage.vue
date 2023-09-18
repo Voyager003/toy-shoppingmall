@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import { signup, validateEmail, validatePassword } from "@/services/user-register.ts";
+import { signup, validateEmail, validatePassword } from "@/services/user/user-register.ts";
 
 export default {
   name: "SignupPage",
