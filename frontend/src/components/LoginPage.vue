@@ -54,7 +54,6 @@ export default {
         .then(response => {
           if (response.status === 200) {
             authStore.login(response.data);
-            alert("로그인 되었습니다!");
             router.replace("/products");
           }
         })

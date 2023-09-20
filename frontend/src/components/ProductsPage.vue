@@ -17,7 +17,6 @@
           <button type="submit" class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
         </div>
       </form>
-
       <div class="mt-4 flex justify-end">
         <button @click="goItemRegisterPage" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:ring-2 focus:ring-blue-300">
           상품 등록
@@ -54,16 +53,19 @@ export default {
     };
   },
   created() {
-    fetchList(this.page).then((response) => {
-      this.itemList = response.data.elements;
-      this.totalPages = response.data.totalPages;
-      this.page.page = response.data.currentPage;
-    });
+    this.searchItem();
   },
   methods: {
     onPageChange(value) {
       this.page.page = value.requestPage;
-      this.created();
+      this.searchItem();
+    },
+    searchItem() {
+      fetchList(this.page).then((response) => {
+        this.itemList = response.data.elements;
+        this.totalPages = response.data.totalPages;
+        this.page.page = response.data.currentPage;
+      });
     },
     goItemRegisterPage() {
       const accessToken = localStorage.getItem("accessToken");
@@ -72,7 +74,6 @@ export default {
         router.push("/login");
         return;
       }
-
       const tokenData = JSON.parse(accessToken);
       const roles = tokenData ? tokenData.roles : [];
 
