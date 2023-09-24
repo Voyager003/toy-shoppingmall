@@ -29,6 +29,7 @@ public class ItemService {
 
     private final ItemRepository itemRepository;
 
+    /* 상품 정보 등록 */
     @Transactional
     public Long registerItem(ItemRequest request, MultipartFile imgFile) throws IOException {
         Item newItem = createItem(request, imgFile);
@@ -88,13 +89,30 @@ public class ItemService {
         return System.currentTimeMillis() + "_" + UUID.randomUUID().toString() + extension;
     }
 
-    // 상품 단건 조회
+    /* 상품 단건 조회 */
     public ItemResponse findItem(Long itemId) throws Throwable {
         Item item = itemRepository.getById(itemId);
         return new ItemResponse(item);
     }
 
+    /* 페이징 조회 */
     public Page<Item> findItems(Pageable pageable) {
         return itemRepository.findAll(pageable);
+    }
+
+
+    /* 상품 정보 수정 */
+    @Transactional
+    public Long updateItem(Long itemId, ItemRequest request) throws Throwable {
+        Item id = itemRepository.getById(itemId);
+        id.updateItemInfo(request.getName(), request.getPrice());
+        return itemId;
+    }
+
+    /* 상품 정보 삭제 */
+    @Transactional
+    public void deleteItem(Long itemId) throws Throwable {
+        Item item = itemRepository.getById(itemId);
+        itemRepository.delete(item);
     }
 }

@@ -26,6 +26,11 @@ public abstract class Item {
 
     private String imagePath;
 
+    public void updateItemInfo(String name, int price) {
+        this.name = name;
+        this.price = price;
+    }
+
     public void addStock(int quantity) {
         this.stockQuantity += quantity;
     }

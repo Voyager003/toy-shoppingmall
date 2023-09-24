@@ -15,6 +15,7 @@ import toy.shoppingmall.domain.item.domain.Item;
 import toy.shoppingmall.domain.item.dto.ItemRequest;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -34,27 +35,12 @@ class ItemServiceTest {
     @DisplayName("상품 등록 테스트")
     void itemRegisterTest() throws IOException {
         /**
-         * given : Item(책)의 상품 명, 가격, 재고가 주어진다.
-         * when : 상품 등록을 요청한다.
-         * then : 요청한 상품 명, 가격, 재고를 저장하고 예상 값과 같은지 검증한다.
+         * given : 상품을 1개 등록한다.(registerItem)
+         * when : 상품 목록 조회 시
+         * then : 요청한 상품 명, 가격, 재고가 예상 값과 같은지 검증한다.
          */
 
-        ItemRequest bookRequest = ItemRequest.builder()
-                .name("Book Item")
-                .price(20000)
-                .stockQuantity(5)
-                .category("book")
-                .categoryDetail("Author Name")
-                .build();
-
-        MockMultipartFile multipartFile = new MockMultipartFile(
-                "file",
-                "test.txt",
-                "text/plain",
-                "Test content".getBytes()
-        );
-
-        itemService.registerItem(bookRequest, multipartFile);
+        registerItem();
 
         Book savedBook = (Book) itemRepository.findAll().get(0);
         assertThat(savedBook.getName()).isEqualTo("Book Item");
@@ -103,5 +89,68 @@ class ItemServiceTest {
         assertEquals(10, pageableItems.getTotalElements());
         assertEquals(4, pageableItems.getTotalPages());
         assertTrue(pageableItems.hasNext());
+    }
+
+    @Test
+    @DisplayName("상품 수정 테스트")
+    void updateItemTest() throws Throwable {
+        /**
+         * given : 1개의 상품을 등록한다.
+         * when : 상품의 이름과 가격을 변경한다(updateRequest)
+         * then : 변경 후, 바뀐 이름과 가격이 예상 값과 같은지 검증한다.
+         */
+
+        Long itemId = registerItem();
+
+        ItemRequest updateRequest = ItemRequest.builder()
+                .name("Book Item2")
+                .price(30000)
+                .stockQuantity(3)
+                .category("book")
+                .categoryDetail("Bong")
+                .build();
+
+        itemService.updateItem(itemId, updateRequest);
+
+        Item item = itemRepository.getById(itemId);
+
+        assertThat(item.getName()).isEqualTo("Book Item2");
+        assertThat(item.getPrice()).isEqualTo(30000);
+    }
+
+    @Test
+    @DisplayName("상품 삭제 테스트")
+    void deleteItemTest() throws Throwable {
+        /**
+         * given : 1개의 상품을 등록한다.
+         * when : 상품의 정보를 삭제한 뒤
+         * then : Optional의 값이 비어있다면 성공한다.
+         */
+
+        Long itemId = registerItem();
+
+        itemService.deleteItem(itemId);
+
+        Optional<Item> deletedItem = itemRepository.findById(itemId);
+        assertThat(deletedItem).isEmpty();
+    }
+
+    private Long registerItem() throws IOException {
+        ItemRequest request = ItemRequest.builder()
+                .name("Book Item")
+                .price(20000)
+                .stockQuantity(5)
+                .category("book")
+                .categoryDetail("Author Name")
+                .build();
+
+        MockMultipartFile multipartFile = new MockMultipartFile(
+                "file",
+                "test.txt",
+                "text/plain",
+                "Test content".getBytes()
+        );
+
+        return itemService.registerItem(request, multipartFile);
     }
 }
