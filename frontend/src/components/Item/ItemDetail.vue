@@ -18,9 +18,12 @@
             </div>
           </div>
 
+          <input type="number" v-model.number="count" min="1" max="5" class="mr-2 w-16 h-8 border border-gray-300 rounded focus:outline-none focus:border-blue-500" />
+
           <span class="title-font font-medium text-2xl text-gray-900"> {{ item.price }} 원 </span>
-          <button class="flex ml-auto text-white bg-red-500 border-0 py-2 px-6 focus:outline-none hover:bg-red-600 rounded">
-            장바구니에 담기
+
+          <button @click="orderItem" class="flex ml-auto text-white bg-red-500 border-0 py-2 px-6 focus:outline-none hover:bg-red-600 rounded">
+            구매하기
           </button>
         </div>
       </div>
@@ -28,9 +31,11 @@
   </section>
 </template>
 
-<script lang="ts">
-import { onMounted, reactive } from "vue";
+<script>
+import { onMounted, reactive, ref } from "vue";
 import axios from "axios";
+import { useAuthStore } from "@/stores/user-store";
+import router from "@/router";
 
 export default {
   name: "ItemDetail",
@@ -41,10 +46,14 @@ export default {
       price: 0,
       stockQuantity: 0
     });
+
+    const itemId = ref(null);
+    const count = ref(1);
+
     onMounted(async () => {
       try {
-        const itemId = 1;
-        const response = await axios.get(`/products/${itemId}`);
+        itemId.value = 1;
+        const response = await axios.get(`/products/${itemId.value}`);
         item.imagePath = response.data.imagePath;
         item.name = response.data.name;
         item.price = response.data.price;
@@ -53,8 +62,36 @@ export default {
         console.error("상품 정보를 가져오는 데 실패했습니다.", error);
       }
     });
-    return { item };
-  }
+    const orderItem = async () => {
+      const authStore = useAuthStore();
+      if (!authStore.isLoggedIn) {
+        alert("로그인이 필요합니다.");
+        router.push("/login");
+        return;
+      }
+      try {
+        const orderRequest = {
+          itemId: itemId.value,
+          count: count.value
+        };
+        const tokenData = JSON.parse(localStorage.getItem('accessToken'));
+        const token = tokenData.token;
+        const response = await axios.post('/api/orders', orderRequest, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.status === 200) {
+          alert('상품을 성공적으로 주문했습니다.');
+          await router.replace(`/products`);
+        }
+      } catch (error) {
+        console.error('주문을 실패했습니다.', error);
+      }
+    };
+
+    return { item, itemId, count, orderItem };
+  },
 };
 </script>
 
