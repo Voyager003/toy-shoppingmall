@@ -1,8 +1,11 @@
 package toy.shoppingmall.domain.order.application;
 
 import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import toy.shoppingmall.domain.item.dao.ItemRepository;
 import toy.shoppingmall.domain.item.domain.Book;
@@ -14,6 +17,7 @@ import toy.shoppingmall.domain.order.domain.Order;
 import toy.shoppingmall.domain.order.domain.OrderStatus;
 import toy.shoppingmall.domain.user.dao.UserRepository;
 import toy.shoppingmall.domain.user.domain.User;
+import toy.shoppingmall.global.security.UserDetailsImpl;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -39,10 +43,9 @@ class OrderServiceTest {
          * then : 주문의 상태, 주문의 수량, 주문의 총 가격, 상품의 재고를 확인한다.
          */
 
-        User user = registerUser();
+        registerUser();
         Book book = registerItem("kim", 1000, 5);
-
-        Long orderId = orderService.order(user.getId(), book.getId(), 3);
+        Long orderId = orderService.order(book.getId(), 3);
 
         Order getOrder = orderRepository.findById(orderId).get();
 
@@ -61,11 +64,11 @@ class OrderServiceTest {
          * then : 예외를 발생시킨다.
          */
 
-        User user = registerUser();
+        registerUser();
         Book book = registerItem("kim", 1000, 5);
 
         Assertions.assertThrows(IllegalStateException.class, () -> {
-            orderService.order(user.getId(), book.getId(), 6);
+            orderService.order(book.getId(), 6);
         });
     }
 
@@ -78,10 +81,10 @@ class OrderServiceTest {
          * then : 취소한 뒤의 상태는 'CANCEL'이 되며, 상품의 재고를 원복한다.
          */
 
-        User user = registerUser();
+        registerUser();
         Book book = registerItem("kim", 1000, 5);
 
-        Long orderId = orderService.order(user.getId(), book.getId(), 3);
+        Long orderId = orderService.order(book.getId(), 3);
 
         orderService.cancelOrder(orderId);
 
@@ -91,7 +94,7 @@ class OrderServiceTest {
         assertEquals(5, book.getStockQuantity());
     }
 
-    private User registerUser() {
+    private void registerUser() {
         Address address = new Address("한국", "서울");
 
         Set<Authority> authorities = new HashSet<>();
@@ -103,7 +106,12 @@ class OrderServiceTest {
                 .roles(authorities)
                 .build();
         userRepository.save(user);
-        return user;
+
+        Authentication mockAuth = Mockito.mock(Authentication.class);
+
+        UserDetailsImpl userDetails = new UserDetailsImpl(user.getId(), user.getEmail(), user.getPassword(), null);
+        Mockito.when(mockAuth.getPrincipal()).thenReturn(userDetails);
+        SecurityContextHolder.getContext().setAuthentication(mockAuth);
     }
 
     private Book registerItem(String name, int price, int stockQuantity) {

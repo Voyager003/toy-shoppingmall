@@ -8,13 +8,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OrderRequest {
 
-    private Long userId;
     private Long itemId;
     private int count;
 
     @Builder
     private OrderRequest(Long userId, Long itemId, int count) {
-        this.userId = userId;
         this.itemId = itemId;
         this.count = count;
     }

@@ -16,14 +16,15 @@ public class OrderApi {
 
     @PostMapping("/api/orders")
     @PreAuthorize("hasRole('ROLE_CUSTOMER')")
-    public ResponseEntity addToCart(@RequestBody OrderRequest orderRequest) throws Throwable {
-        orderService.order(orderRequest.getUserId(), orderRequest.getItemId(), orderRequest.getCount());
+    public ResponseEntity order(@RequestBody OrderRequest orderRequest) throws Throwable {
+        orderService.order(orderRequest.getItemId(), orderRequest.getCount());
         return ResponseEntity.ok().build();
     }
 
+
     @DeleteMapping("/api/orders/{id}")
     @PreAuthorize("hasRole('ROLE_CUSTOMER')")
-    public ResponseEntity removeFromCart(@PathVariable Long id) throws Throwable {
+    public ResponseEntity removeOrder(@PathVariable Long id) throws Throwable {
         orderService.cancelOrder(id);
         return ResponseEntity.ok().build();
     }
