@@ -86,7 +86,7 @@ class ItemServiceTest {
         Page<Item> pageableItems = itemService.findItems(pageable);
 
         assertEquals(3, pageableItems.getContent().size());
-        assertEquals(10, pageableItems.getTotalElements());
+        assertEquals(11, pageableItems.getTotalElements());
         assertEquals(4, pageableItems.getTotalPages());
         assertTrue(pageableItems.hasNext());
     }

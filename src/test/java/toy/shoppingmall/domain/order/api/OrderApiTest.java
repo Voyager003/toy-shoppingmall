@@ -71,10 +71,9 @@ class OrderApiTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(print());
     }
-
     @Test
     @DisplayName("상품 주문 삭제 API 성공 테스트")
-    void cancelOrder_succesfully() throws Exception {
+    void cancelOrder_successfully() throws Exception {
 
         /**
          * given : 주문을 취소하기 위한 주문 ID를 담은 Long 객체를 생성한다.

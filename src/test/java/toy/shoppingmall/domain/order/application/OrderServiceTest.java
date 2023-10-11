@@ -20,6 +20,7 @@ import toy.shoppingmall.domain.user.domain.User;
 import toy.shoppingmall.global.security.UserDetailsImpl;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,7 +39,7 @@ class OrderServiceTest {
     @DisplayName("상품을 주문하고 상태 및 재고, 가격을 확인한다.")
     public void orderItemsTest() throws Exception {
         /**
-         * given : 유저와 상품(Book)의 정보를 DB에 등록한다.
+         * given : 유저와 상품의 정보를 등록한다.
          * when : 상품을 주문한다.
          * then : 주문의 상태, 주문의 수량, 주문의 총 가격, 상품의 재고를 확인한다.
          */
@@ -59,7 +60,7 @@ class OrderServiceTest {
     @DisplayName("재고수량을 초과한 경우, 예외가 발생한다.")
     public void OverstockExceptionTest() throws Exception {
         /**
-         * given : 유저와 상품(Book)의 정보를 DB에 등록한다.
+         * given : 유저와 상품(Book)의 정보를 등록한다.
          * when : 재고(5)를 초과한 주문(6)을 요구한다.
          * then : 예외를 발생시킨다.
          */
@@ -70,6 +71,26 @@ class OrderServiceTest {
         Assertions.assertThrows(IllegalStateException.class, () -> {
             orderService.order(book.getId(), 6);
         });
+    }
+
+    @Test
+    @DisplayName("상품을 등록하고, 상품 조회 후 주문 목록의 크기를 확인한다.")
+    void getOrderList_Successfully() {
+        /**
+         * given : 유저와 상품(Book)의 정보를 등록한다.
+         * when : 상품을 각 2개, 1개씩 2번 주문한다.
+         * then : 생성된 주문 목록은 2개이다.
+         */
+
+        registerUser();
+        Book book1 = registerItem("kim", 1000, 5);
+        Book book2 = registerItem("rim", 5000, 3);
+
+        orderService.order(book1.getId(), 2);
+        orderService.order(book2.getId(), 2);
+        List<Order> orderList = orderService.getOrderList();
+
+        assertEquals(2, orderList.size());
     }
 
     @Test
