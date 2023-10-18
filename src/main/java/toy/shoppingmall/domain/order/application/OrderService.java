@@ -9,7 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import toy.shoppingmall.domain.item.dao.ItemRepository;
 import toy.shoppingmall.domain.item.domain.Item;
 import toy.shoppingmall.domain.model.Delivery;
+import toy.shoppingmall.domain.order.dao.OrderQueryRepository;
 import toy.shoppingmall.domain.order.dao.OrderRepository;
+import toy.shoppingmall.domain.order.dao.OrderRepositoryImpl;
 import toy.shoppingmall.domain.order.domain.Order;
 import toy.shoppingmall.domain.order.domain.OrderItem;
 import toy.shoppingmall.domain.user.dao.UserRepository;
@@ -25,6 +27,7 @@ import java.util.Optional;
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final OrderRepositoryImpl orderQueryRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
 
@@ -60,7 +63,7 @@ public class OrderService {
         Long userId = userDetails.getId();
         User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found with id : " + userId));
 
-        return orderRepository.findAllByUserId(user.getId());
+        return orderQueryRepository.findOrderListByUserId(user.getId());
     }
 
     /* 주문 취소 */

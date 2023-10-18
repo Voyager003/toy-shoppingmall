@@ -1,5 +1,6 @@
 package toy.shoppingmall.domain.order.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import toy.shoppingmall.domain.model.Delivery;
@@ -34,6 +35,7 @@ public class Order {
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "delivery_id")
+    @JsonIgnore
     private Delivery delivery;
 
     private LocalDateTime orderDate;

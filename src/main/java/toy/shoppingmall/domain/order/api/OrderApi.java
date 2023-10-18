@@ -25,7 +25,7 @@ public class OrderApi {
         return ResponseEntity.ok().build();
     }
 
-    /* 주문 상품 목록 조회 */
+    /* 상품 조회 */
     @GetMapping("/api/orders")
     @PreAuthorize("hasRole('ROLE_CUSTOMER')")
     public ResponseEntity<?> getOrder() throws Throwable {
